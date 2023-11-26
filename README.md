@@ -1,6 +1,6 @@
 # go-bookkeeping
-go 记账 api
 
+go 记账 api
 
 ```
 api/ 后端接口描述模块

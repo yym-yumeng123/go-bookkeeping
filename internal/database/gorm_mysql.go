@@ -40,6 +40,16 @@ func Migrate() {
 	DB.AutoMigrate(&User{})
 }
 
+func Curd() {
+	// 创建一个 user
+	user := &User{Email: "2@qq.com"}
+	DB.Create(user)
+
+	// 修改
+	user.Phone = 123456787
+	DB.Save(user)
+}
+
 func Close() {
 	sqlDB, err := DB.DB()
 	if err != nil {

@@ -36,12 +36,18 @@ func Run() {
 		},
 	}
 
-	rootCmd.AddCommand(srvCmd)
-	rootCmd.AddCommand(dbCmd)
-	rootCmd.AddCommand(createCmd)
-	rootCmd.AddCommand(migrateCmd)
+	crudCmd := &cobra.Command{
+		Use: "crud",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.Curd()
+		},
+	}
+
 	database.GormConnect()
 	defer database.Close()
+
+	rootCmd.AddCommand(srvCmd, dbCmd)
+	rootCmd.AddCommand(createCmd, migrateCmd, crudCmd)
 	rootCmd.Execute()
 }
 

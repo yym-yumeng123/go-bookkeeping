@@ -21,17 +21,27 @@ func Run() {
 	dbCmd := &cobra.Command{
 		Use: "db",
 	}
+
 	createCmd := &cobra.Command{
 		Use: "create",
 		Run: func(cmd *cobra.Command, args []string) {
-			database.MysqlCreateTable()
+			database.CtreateUserTable()
 		},
 	}
+
+	migrateCmd := &cobra.Command{
+		Use: "migrate",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.Migrate()
+		},
+	}
+
 	rootCmd.AddCommand(srvCmd)
 	rootCmd.AddCommand(dbCmd)
 	rootCmd.AddCommand(createCmd)
-	database.MysqlConnect()
-	defer database.MysqlClose()
+	rootCmd.AddCommand(migrateCmd)
+	database.GormConnect()
+	defer database.Close()
 	rootCmd.Execute()
 }
 

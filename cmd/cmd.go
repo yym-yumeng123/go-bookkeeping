@@ -1,8 +1,45 @@
 package cmd
 
-import "bookkeeping/internal/router"
+import (
+	"bookkeeping/internal/database"
+	"bookkeeping/internal/router"
+	"log"
+
+	"github.com/spf13/cobra"
+)
+
+func Run() {
+	rootCmd := &cobra.Command{
+		Use: "bookkeeping",
+	}
+	srvCmd := &cobra.Command{
+		Use: "server",
+		Run: func(cmd *cobra.Command, args []string) {
+			RunServer()
+		},
+	}
+	dbCmd := &cobra.Command{
+		Use: "db",
+	}
+	createCmd := &cobra.Command{
+		Use: "create",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.MysqlCreateTable()
+		},
+	}
+	rootCmd.AddCommand(srvCmd)
+	rootCmd.AddCommand(dbCmd)
+	rootCmd.AddCommand(createCmd)
+	database.MysqlConnect()
+	defer database.MysqlClose()
+	rootCmd.Execute()
+}
 
 func RunServer() {
 	r := router.New()
-	r.Run()
+	err := r.Run()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Println("r.Run 的下一行")
 }

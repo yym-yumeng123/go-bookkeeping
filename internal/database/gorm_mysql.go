@@ -1,53 +1,67 @@
 package database
 
 import (
+	"bookkeeping/internal/model"
+	"fmt"
 	"log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
+var (
+	DB  *gorm.DB
+	err error
+)
 
-type User struct {
-	ID    int
-	Email string
-	Phone int
-	*gorm.Model
-}
+var models = []any{&model.User{}, &model.Item{}, &model.Tag{}}
 
 // 连接数据库
 func GormConnect() {
 	dsn := "root:YYm1994@tcp(127.0.0.1:3306)/bookkeeping?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn))
-	DB = db
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	fmt.Println("我链接了")
 	if err != nil {
 		panic("failed to connect database")
 	}
 }
 
-// 创建一个表
-func CtreateUserTable() {
-	err := DB.Migrator().CreateTable(&User{})
+func CreateTable() {
+
+	for _, model := range models {
+		err = DB.Migrator().CreateTable(&model)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+	log.Println("创建表成功")
+}
+
+func Migrate() {
+	// 自动迁移表字段, 修改 struct 结构体里面的字段, 例: 添加 Phone 字段
+	err = DB.AutoMigrate(models...)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("迁移表成功")
+}
+
+func DropColumn() {
+	err = DB.Migrator().DropColumn(&model.User{}, "address")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println("createTables success")
+	log.Println("删除列成功")
 }
 
-// 迁移数据 对数据字段修改, 能增加字段, 不能删除字段
-func Migrate() {
-	DB.AutoMigrate(&User{})
-}
-
-func Curd() {
-	// 创建一个 user
-	user := &User{Email: "2@qq.com"}
-	DB.Create(user)
-
-	// 修改
-	user.Phone = 123456787
-	DB.Save(user)
+func Crud() {
+	// 创建一个用户 user
+	user := model.User{Email: "1@qq.com"}
+	tx := DB.Create(&user)
+	log.Println(tx.RowsAffected)
 }
 
 func Close() {

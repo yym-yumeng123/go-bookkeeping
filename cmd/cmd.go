@@ -9,23 +9,27 @@ import (
 )
 
 func Run() {
+	// 根命令
 	rootCmd := &cobra.Command{
 		Use: "bookkeeping",
 	}
-	srvCmd := &cobra.Command{
+	// server 命令
+	serverCmd := &cobra.Command{
 		Use: "server",
 		Run: func(cmd *cobra.Command, args []string) {
 			RunServer()
 		},
 	}
+	// 数据库命令
 	dbCmd := &cobra.Command{
 		Use: "db",
+		Run: func(cmd *cobra.Command, args []string) {},
 	}
 
 	createCmd := &cobra.Command{
 		Use: "create",
 		Run: func(cmd *cobra.Command, args []string) {
-			database.CtreateUserTable()
+			database.CreateTable()
 		},
 	}
 
@@ -36,18 +40,25 @@ func Run() {
 		},
 	}
 
+	DropColumnCmd := &cobra.Command{
+		Use: "drop",
+		Run: func(cmd *cobra.Command, args []string) {
+			database.DropColumn()
+		},
+	}
+
 	crudCmd := &cobra.Command{
 		Use: "crud",
 		Run: func(cmd *cobra.Command, args []string) {
-			database.Curd()
+			database.Crud()
 		},
 	}
 
 	database.GormConnect()
 	defer database.Close()
 
-	rootCmd.AddCommand(srvCmd, dbCmd)
-	rootCmd.AddCommand(createCmd, migrateCmd, crudCmd)
+	rootCmd.AddCommand(serverCmd, dbCmd)
+	rootCmd.AddCommand(createCmd, migrateCmd, DropColumnCmd, crudCmd)
 	rootCmd.Execute()
 }
 

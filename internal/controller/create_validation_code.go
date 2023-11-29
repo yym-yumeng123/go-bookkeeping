@@ -4,11 +4,16 @@ import (
 	"bookkeeping/internal/database"
 	"bookkeeping/internal/email"
 	"bookkeeping/internal/model"
+	"crypto/rand"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+type Body struct {
+	Email string `json:"email" binding:"required"`
+}
 
 // CreateValidationCode godoc
 // @Summary      用邮箱发送验证码
@@ -20,22 +25,27 @@ import (
 // @Failure      500
 // @Router      /validation_codes [post]
 func CreateValidationCode(c *gin.Context) {
-	var body struct {
-		Email string `json:"email" binding:"required"`
-	}
+	var body Body
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.String(http.StatusBadRequest, "参数错误")
 		return
 	}
 
-	code := model.ValidationCode{Email: body.Email, Code: "123456"}
-	tx := database.DB.Create(&code)
+	str, err := generateDigist()
 
-	if err := email.SendValidationCode(body.Email, "123456"); err != nil {
+	if err != nil {
+		c.String(200, "生成验证码失败")
+		return
+	}
+
+	if err := email.SendValidationCode(body.Email, str); err != nil {
 		log.Println(err, "------")
 		c.String(500, "发送失败")
 		return
 	}
+
+	code := model.ValidationCode{Email: body.Email, Code: str}
+	tx := database.DB.Create(&code)
 
 	if tx.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -43,4 +53,21 @@ func CreateValidationCode(c *gin.Context) {
 		})
 	}
 
+}
+
+func generateDigist() (string, error) {
+	len := 4
+	b := make([]byte, len)
+	_, err := rand.Read(b)
+
+	if err != nil {
+		return "", err
+	}
+
+	digits := make([]byte, len)
+	for i := range b {
+		digits[i] = b[i]%10 + 48
+	}
+
+	return string(digits), nil
 }

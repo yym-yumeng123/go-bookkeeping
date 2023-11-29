@@ -15,7 +15,7 @@ var (
 	err error
 )
 
-var models = []any{&model.User{}, &model.Item{}, &model.Tag{}}
+var models = []any{&model.User{}, &model.Item{}, &model.Tag{}, &model.ValidationCode{}}
 
 // 连接数据库
 func GormConnect() {

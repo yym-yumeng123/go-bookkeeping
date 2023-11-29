@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"bookkeeping/internal/database"
 	"bookkeeping/internal/email"
+	"bookkeeping/internal/model"
 	"log"
 	"net/http"
 
@@ -26,16 +28,19 @@ func CreateValidationCode(c *gin.Context) {
 		return
 	}
 
+	code := model.ValidationCode{Email: body.Email, Code: "123456"}
+	tx := database.DB.Create(&code)
+
 	if err := email.SendValidationCode(body.Email, "123456"); err != nil {
 		log.Println(err, "------")
 		c.String(500, "发送失败")
 		return
 	}
 
-	log.Println("------------")
-	log.Println(body.Email)
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"success": true,
-	// })
-	c.String(200, "ok")
+	if tx.Error == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+		})
+	}
+
 }

@@ -3,6 +3,7 @@ package router
 import (
 	"bookkeeping/internal/controller"
 	"bookkeeping/internal/controller/ping"
+	"bookkeeping/internal/database"
 
 	"github.com/gin-gonic/gin"
 
@@ -43,6 +44,7 @@ import (
 func New() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+	database.GormConnect()
 	docs.SwaggerInfo.Version = "1.0"
 	r.GET("/api/v1/ping", ping.Ping)
 	r.POST("/api/v1/validation_codes", controller.CreateValidationCode)

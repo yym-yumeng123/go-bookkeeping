@@ -46,6 +46,29 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/validation_codes": {
+            "post": {
+                "description": "接受邮箱地址, 发送验证码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "code"
+                ],
+                "summary": "用邮箱发送验证码",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "securityDefinitions": {

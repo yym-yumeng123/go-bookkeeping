@@ -1,6 +1,7 @@
 package router
 
 import (
+	"bookkeeping/internal/controller"
 	"bookkeeping/internal/controller/ping"
 
 	"github.com/gin-gonic/gin"
@@ -44,6 +45,7 @@ func New() *gin.Engine {
 	r := gin.Default()
 	docs.SwaggerInfo.Version = "1.0"
 	r.GET("/api/v1/ping", ping.Ping)
+	r.POST("/api/v1/validation_codes", controller.CreateValidationCode)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

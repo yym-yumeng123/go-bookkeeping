@@ -31,6 +31,21 @@ paths:
       summary: 测试 API 是否正常工作
       tags:
       - accounts
+  /validation_codes:
+    post:
+      consumes:
+      - application/json
+      description: 接受邮箱地址, 发送验证码
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      summary: 用邮箱发送验证码
+      tags:
+      - code
 securityDefinitions:
   BasicAuth:
     type: basic

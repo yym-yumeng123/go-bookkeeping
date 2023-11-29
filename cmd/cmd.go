@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bookkeeping/internal/database"
+	"bookkeeping/internal/email"
 	"bookkeeping/internal/router"
 	"log"
 
@@ -33,6 +34,13 @@ func Run() {
 		},
 	}
 
+	emailCmd := &cobra.Command{
+		Use: "email",
+		Run: func(cmd *cobra.Command, args []string) {
+			email.Send()
+		},
+	}
+
 	migrateCmd := &cobra.Command{
 		Use: "migrate",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -59,6 +67,7 @@ func Run() {
 
 	rootCmd.AddCommand(serverCmd, dbCmd)
 	rootCmd.AddCommand(createCmd, migrateCmd, DropColumnCmd, crudCmd)
+	rootCmd.AddCommand(emailCmd)
 	rootCmd.Execute()
 }
 

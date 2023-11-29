@@ -20,11 +20,13 @@ func CreateSession(c *gin.Context) {
 		return
 	}
 
-	// select * from validation_codes where email = '' and code = '' order by created_at adc;
+	// select * from validation_codes where email = '' and code = '' order by created_at asc;
 	codes := model.ValidationCode{}
 	tx := database.DB.Where("email = ? and code = ?", requestBody.Email, requestBody.Code).First(&codes)
 	if tx.Error != nil {
-		c.String(http.StatusBadRequest, "无效的验证码")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+		})
 		return
 	}
 

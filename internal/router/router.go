@@ -48,6 +48,7 @@ func New() *gin.Engine {
 	docs.SwaggerInfo.Version = "1.0"
 	r.GET("/api/v1/ping", ping.Ping)
 	r.POST("/api/v1/validation_codes", controller.CreateValidationCode)
+	r.POST("/api/v1/session", controller.CreateSession)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

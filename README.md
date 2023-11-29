@@ -52,3 +52,13 @@ go mod
    3. 提供了更高级的查询接口
    4. 良好的文档和社区支持
 3. kyleconroy/sqlc
+
+
+先记录一下, 生成 文档
+
+```
+1. 执行 swag init
+/d/Library/goWorkSpace/library/bin/swag.exe init -g ./internal/router/router.go
+
+2. go run main.go server
+```

@@ -3,6 +3,7 @@ package router
 import (
 	"bookkeeping/internal/controller"
 	"bookkeeping/internal/database"
+	"bookkeeping/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 
@@ -44,6 +45,7 @@ import (
 func New() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+	r.Use(middleware.GetUserInfo()) // Use 中间件
 	database.GormConnect()
 	docs.SwaggerInfo.Version = "1.0"
 

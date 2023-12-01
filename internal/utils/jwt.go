@@ -2,26 +2,21 @@ package utils
 
 import (
 	"crypto/rand"
-
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 )
 
+var hmacSampleSecret = []byte("yym1994010203wxf1234567890")
+
 // 生成 jwt
-func GenerateJWT(user_id int) (string, error) {
+func GenerateJWT(id int) (string, error) {
 	// Create a new token object, specifying signing method and the claims
 	// you would like it to contain.
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user_id,
+		"user_id": id,
 	})
 
-	key, err := generateHMACKey()
-
-	if err != nil {
-		return "", err
-	}
-
-	// Sign and get the complete encoded token as a string using the secret
-	return token.SignedString(key)
+	return token.SignedString(hmacSampleSecret)
 }
 
 // 生成 key
@@ -33,5 +28,16 @@ func generateHMACKey() ([]byte, error) {
 	}
 
 	return key, nil
+}
 
+func Parse(jwtString string) (*jwt.Token, error) {
+	return jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return hmacSampleSecret, nil
+	})
 }

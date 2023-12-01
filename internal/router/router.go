@@ -2,7 +2,6 @@ package router
 
 import (
 	"bookkeeping/internal/controller"
-	"bookkeeping/internal/controller/ping"
 	"bookkeeping/internal/database"
 
 	"github.com/gin-gonic/gin"
@@ -53,7 +52,7 @@ func New() *gin.Engine {
 		controller.RegisterRoutes(api)
 	}
 
-	r.GET("/api/v1/ping", ping.Ping)
+	r.GET("/api/v1/ping", controller.Ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
@@ -63,5 +62,6 @@ func loadControllers() []controller.Controller {
 	return []controller.Controller{
 		&controller.SessionController{},
 		&controller.ValidationCodeController{},
+		&controller.MeController{},
 	}
 }

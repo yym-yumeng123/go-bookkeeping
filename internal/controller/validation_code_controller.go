@@ -5,33 +5,32 @@ import (
 	"bookkeeping/internal/email"
 	"bookkeeping/internal/model"
 	"crypto/rand"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type Body struct {
 	Email string `json:"email" binding:"required"`
 }
 
-// CreateValidationCode godoc
-// @Summary      用邮箱发送验证码
-// @Description  接受邮箱地址, 发送验证码
-// @Tags         code
-// @Accept       json
-// @Produce      json
-// @Success      200
-// @Failure      500
-// @Router      /validation_codes [post]
-func CreateValidationCode(c *gin.Context) {
+type ValidationCodeController struct{}
+
+func (v *ValidationCodeController) RegisterRoutes(rg *gin.RouterGroup) {
+	v1 := rg.Group("/v1")
+	{
+		v1.POST("/validation_codes", v.Create)
+	}
+}
+
+func (v *ValidationCodeController) Create(c *gin.Context) {
 	var body Body
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.String(http.StatusBadRequest, "params err")
 		return
 	}
 
-	str, err := generateDigist()
+	str, err := generateDigits()
 
 	if err != nil {
 		c.String(200, "code fail")
@@ -53,10 +52,29 @@ func CreateValidationCode(c *gin.Context) {
 			"code":    str,
 		})
 	}
-
 }
 
-func generateDigist() (string, error) {
+func (v *ValidationCodeController) Destroy(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (v *ValidationCodeController) Update(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (v *ValidationCodeController) Get(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (v *ValidationCodeController) GetPaged(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func generateDigits() (string, error) {
 	len := 4
 	b := make([]byte, len)
 	_, err := rand.Read(b)

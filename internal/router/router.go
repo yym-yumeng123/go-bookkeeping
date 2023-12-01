@@ -46,14 +46,15 @@ func New() *gin.Engine {
 	r := gin.Default()
 	database.GormConnect()
 	docs.SwaggerInfo.Version = "1.0"
+
+	api := r.Group("/api")
+
+	sessionC := controller.SessionController{}
+	sessionC.RegisterRoutes(api)
+	validationC := controller.ValidationCodeController{}
+	validationC.RegisterRoutes(api)
+
 	r.GET("/api/v1/ping", ping.Ping)
-
-	v1 := r.Group("/api/v1")
-	{
-		v1.POST("/api/v1/validation_codes", controller.CreateValidationCode)
-		v1.POST("/api/v1/session", controller.CreateSession)
-	}
-
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r

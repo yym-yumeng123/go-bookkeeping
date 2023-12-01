@@ -1,6 +1,9 @@
 package model
 
+import "gorm.io/gorm"
+
 type User struct {
-	ID    int `gorm:"PrimaryKey;AutoIncrement"`
-	Email string
+	gorm.Model
+	ID    int    `gorm:"PrimaryKey;AutoIncrement"`
+	Email string `gorm:"unique"`
 }

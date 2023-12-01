@@ -3,7 +3,9 @@ package controller
 import (
 	"bookkeeping/internal/database"
 	"bookkeeping/internal/model"
+	"bookkeeping/internal/utils"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +22,7 @@ func CreateSession(c *gin.Context) {
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"msg":     "参数错误",
+			"msg":     "params error",
 		})
 		return
 	}
@@ -35,13 +37,31 @@ func CreateSession(c *gin.Context) {
 	if tx.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"msg":     "无效的验证码",
+			"msg":     "invalid code",
+		})
+		return
+	}
+
+	// 找到对应的用户, 有则使用, 无则创建
+	user := model.User{}
+	tx = database.DB.Model(&user).Where("email = ?", requestBody.Email)
+	if tx.Error != nil {
+		database.DB.Create(&model.User{Email: requestBody.Email})
+	}
+
+	jwt, err := utils.GenerateJWT(user.ID)
+	if err != nil {
+		log.Println("GenerateJWT fail", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"msg":     "try",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"jwt":     "xxx",
+		"jwt":     jwt,
+		"user_id": user.ID,
 	})
 }

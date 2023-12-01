@@ -11,8 +11,14 @@ import (
 )
 
 // GetUserInfo 中间件
-func GetUserInfo() gin.HandlerFunc {
+func GetUserInfo(whiteList []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+		if index := indexOf(whiteList, path); index != -1 {
+			c.Next()
+			return
+		}
+
 		user, err := getMe(c)
 
 		if err != nil {
@@ -54,4 +60,14 @@ func getMe(c *gin.Context) (model.User, error) {
 	}
 
 	return user, nil
+}
+
+func indexOf(stringList []string, str string) int {
+	for i, s := range stringList {
+		if s == str {
+			return i
+		}
+	}
+
+	return -1
 }

@@ -45,7 +45,7 @@ import (
 func New() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.Use(middleware.GetUserInfo()) // Use 中间件
+	r.Use(middleware.GetUserInfo([]string{"/ping", "/api/v1/session", "/api/v1/validation_code"})) // Use 中间件
 	database.GormConnect()
 	docs.SwaggerInfo.Version = "1.0"
 

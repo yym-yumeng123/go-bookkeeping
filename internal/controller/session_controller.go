@@ -57,7 +57,7 @@ func (s SessionController) Create(c *gin.Context) {
 
 	tx = database.DB.Model(&model.User{}).Where("email = ?", requestBody.Email).First(&user)
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		database.DB.Create(model.User{Email: requestBody.Email}).Find(&user)
+		database.DB.Create(&model.User{Email: requestBody.Email}).Find(&user)
 	}
 
 	jwt, err := utils.GenerateJWT(user.ID)
@@ -73,7 +73,6 @@ func (s SessionController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"jwt":     jwt,
-		"user_id": user.ID,
 	})
 }
 

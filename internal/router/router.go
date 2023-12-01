@@ -38,9 +38,10 @@ import (
 // @BasePath  /api/v1
 
 // @securityDefinitions.basic  BasicAuth
-
 // @externalDocs.description  OpenAPI
+
 // @externalDocs.url          https://swagger.io/resources/open-api/
+
 func New() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
@@ -48,14 +49,19 @@ func New() *gin.Engine {
 	docs.SwaggerInfo.Version = "1.0"
 
 	api := r.Group("/api")
-
-	sessionC := controller.SessionController{}
-	sessionC.RegisterRoutes(api)
-	validationC := controller.ValidationCodeController{}
-	validationC.RegisterRoutes(api)
+	for _, controller := range loadControllers() {
+		controller.RegisterRoutes(api)
+	}
 
 	r.GET("/api/v1/ping", ping.Ping)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return r
+}
+
+func loadControllers() []controller.Controller {
+	return []controller.Controller{
+		&controller.SessionController{},
+		&controller.ValidationCodeController{},
+	}
 }

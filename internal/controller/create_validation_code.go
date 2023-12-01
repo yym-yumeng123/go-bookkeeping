@@ -27,20 +27,20 @@ type Body struct {
 func CreateValidationCode(c *gin.Context) {
 	var body Body
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.String(http.StatusBadRequest, "参数错误")
+		c.String(http.StatusBadRequest, "params err")
 		return
 	}
 
 	str, err := generateDigist()
 
 	if err != nil {
-		c.String(200, "生成验证码失败")
+		c.String(200, "code fail")
 		return
 	}
 
 	if err := email.SendValidationCode(body.Email, str); err != nil {
 		log.Println(err, "------")
-		c.String(500, "发送失败")
+		c.String(500, "send fail")
 		return
 	}
 
@@ -50,6 +50,7 @@ func CreateValidationCode(c *gin.Context) {
 	if tx.Error == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
+			"code":    str,
 		})
 	}
 

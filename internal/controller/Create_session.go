@@ -4,11 +4,13 @@ import (
 	"bookkeeping/internal/database"
 	"bookkeeping/internal/model"
 	"bookkeeping/internal/utils"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type RequestBody struct {
@@ -44,9 +46,10 @@ func CreateSession(c *gin.Context) {
 
 	// 找到对应的用户, 有则使用, 无则创建
 	user := model.User{}
-	tx = database.DB.Model(&user).Where("email = ?", requestBody.Email)
-	if tx.Error != nil {
-		database.DB.Create(&model.User{Email: requestBody.Email})
+
+	tx = database.DB.Model(&model.User{}).Where("email = ?", requestBody.Email).First(&user)
+	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+		database.DB.Create(model.User{Email: requestBody.Email}).Find(&user)
 	}
 
 	jwt, err := utils.GenerateJWT(user.ID)

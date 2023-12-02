@@ -40,8 +40,9 @@ func getMe(c *gin.Context) (model.User, error) {
 	user := model.User{}
 	// 客户端发送请求携带 http header Authorization = Bearer <jwt>
 	auth := c.GetHeader("Authorization")
-	jwtString := auth[7:]
+	jwtString := auth[8:]
 
+	fmt.Println(jwtString)
 	if auth == "" {
 		return user, fmt.Errorf("token empty")
 	}

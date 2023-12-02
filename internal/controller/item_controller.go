@@ -1,16 +1,17 @@
 package controller
 
 import (
+	"bookkeeping/internal/database"
+	"bookkeeping/internal/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 )
 
 type ItemRequest struct {
-	Amount     int32     `json:"amount" binding:"required"`
-	Kind       string    `json:"kind" binding:"required"`
-	HappenedAt time.Time `json:"happened_at" binding:"required"`
-	TagIds     []int32   `json:"tag_ids" binding:"required"`
+	Amount int32 `json:"amount" binding:"required"`
+	Kind   int   `json:"kind" binding:"required"`
+	//HappenedAt time.Time `json:"happened_at" binding:"required"`
 }
 
 type ItemController struct{}
@@ -31,7 +32,26 @@ func (i *ItemController) Create(c *gin.Context) {
 			"success": false,
 			"msg":     "params error",
 		})
+		return
 	}
+
+	me, _ := c.Get("me")
+	user, _ := me.(model.User)
+	tx := database.DB.Create(&model.Item{
+		Amount:     rBody.Amount,
+		Kind:       rBody.Kind,
+		HappenedAt: time.Now(),
+		UserId:     user.ID,
+	})
+
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, tx.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": "true",
+	})
 
 }
 

@@ -54,10 +54,9 @@ func (s SessionController) Create(c *gin.Context) {
 
 	// 找到对应的用户, 有则使用, 无则创建
 	user := model.User{}
-
-	tx = database.DB.Model(&model.User{}).Where("email = ?", requestBody.Email).First(&user)
+	tx = database.DB.Where("email = ?", requestBody.Email).First(&user)
 	if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-		database.DB.Create(&model.User{Email: requestBody.Email}).Find(&user)
+		database.DB.Create(&model.User{Email: requestBody.Email}).First(&user)
 	}
 
 	jwt, err := utils.GenerateJWT(user.ID)

@@ -8,16 +8,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"strings"
 )
 
 // GetUserInfo 中间件
 func GetUserInfo(whiteList []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.Request.URL.Path
-		if index := indexOf(whiteList, path); index != -1 {
-			c.Next()
-			return
+		for _, s := range whiteList {
+			if has := strings.HasPrefix(path, s); has {
+				c.Next()
+				return
+			}
 		}
+		//if index := indexOf(whiteList, path); index != -1 {
+		//	c.Next()
+		//	return
+		//}
 
 		user, err := getMe(c)
 

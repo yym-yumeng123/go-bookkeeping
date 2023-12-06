@@ -45,7 +45,7 @@ import (
 func New() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
-	r.Use(middleware.GetUserInfo([]string{"/ping", "/api/v1/session", "/api/v1/validation_codes"})) // Use 中间件
+	r.Use(middleware.GetUserInfo([]string{"/api/v1/ping", "/api/v1/session", "/api/v1/validation_codes"})) // Use 中间件
 	database.GormConnect()
 	docs.SwaggerInfo.Version = "1.0"
 
@@ -66,5 +66,6 @@ func loadControllers() []controller.Controller {
 		&controller.ValidationCodeController{},
 		&controller.MeController{},
 		&controller.ItemController{},
+		&controller.TagController{},
 	}
 }

@@ -109,8 +109,7 @@ func (i *ItemController) GetPaged(c *gin.Context) {
 		params.Page = 1
 	}
 
-	tx := database.DB.Where(&model.Item{UserId: user.ID}).Limit(10).Offset((params.Page - 1) * 10).Find(&items)
-	database.DB.Where("user_id = ?", user.ID).Find(&model.Item{}).Count(&count)
+	tx := database.DB.Where(&model.Item{UserId: user.ID}).Count(&count).Limit(10).Offset((params.Page - 1) * 10).Find(&items)
 	if tx.Error != nil {
 		c.String(http.StatusInternalServerError, "internet error")
 	}

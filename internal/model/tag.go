@@ -1,6 +1,16 @@
 package model
 
+import "gorm.io/gorm"
+
 type Tag struct {
-	ID   int
-	Name string
+	gorm.Model
+	Name string `json:"name"`
+}
+
+type CreateTagRequest struct {
+	Name string `json:"name"`
+}
+
+func (t Tag) TableName() string {
+	return "tags"
 }

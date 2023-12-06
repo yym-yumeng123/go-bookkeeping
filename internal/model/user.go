@@ -7,4 +7,5 @@ type User struct {
 	ID    int    `gorm:"PrimaryKey;AutoIncrement"`
 	Email string `gorm:"unique"`
 	Item  []Item // has_many item
+	Tag   []Tag  // has_many tag
 }

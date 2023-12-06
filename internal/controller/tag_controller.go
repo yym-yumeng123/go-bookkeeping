@@ -22,8 +22,11 @@ func (t *TagController) Create(c *gin.Context) {
 		c.String(http.StatusUnprocessableEntity, "params error")
 	}
 
+	me, _ := c.Get("me")
+	user, _ := me.(model.User)
 	tx := database.DB.Create(&model.Tag{
-		Name: body.Name,
+		Name:   body.Name,
+		UserId: user.ID,
 	})
 
 	if tx.Error != nil {

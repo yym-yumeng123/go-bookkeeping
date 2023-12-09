@@ -13,6 +13,8 @@ func (t *TagController) RegisterRoutes(rg *gin.RouterGroup) {
 	v1 := rg.Group("/v1")
 	{
 		v1.POST("/tags", t.Create)
+		v1.DELETE("/tags/:id", t.Destroy)
+		v1.GET("/tags/:id", t.Get)
 	}
 }
 
@@ -40,8 +42,18 @@ func (t *TagController) Create(c *gin.Context) {
 }
 
 func (t *TagController) Destroy(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	idString := c.Param("id")
+
+	tx := database.DB.Where("id = ?", idString).Delete(&model.Tag{})
+
+	if tx.Error != nil {
+		c.String(http.StatusUnprocessableEntity, "参数有误")
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"msg":     "删除成功",
+	})
 }
 
 func (t *TagController) Update(c *gin.Context) {
@@ -50,8 +62,18 @@ func (t *TagController) Update(c *gin.Context) {
 }
 
 func (t *TagController) Get(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	tag := model.Tag{}
+	me, _ := c.Get("me")
+	user, _ := me.(model.User)
+	idString := c.Param("id")
+
+	database.DB.Where("user_id = ?", user.ID).Where("id =?", idString).First(&tag)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    tag,
+	})
+
 }
 
 func (t *TagController) GetPaged(c *gin.Context) {

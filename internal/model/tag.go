@@ -1,6 +1,8 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Tag struct {
 	gorm.Model
@@ -9,7 +11,7 @@ type Tag struct {
 }
 
 type CreateTagRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name" building:"required"`
 }
 
 func (t Tag) TableName() string {
